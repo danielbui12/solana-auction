@@ -1,0 +1,304 @@
+{
+  "version": "0.1.0",
+  "name": "auction",
+  "constants": [
+    {
+      "name": "MASTER_SEED",
+      "type": "bytes",
+      "value": "[109, 97, 115, 116, 101, 114]"
+    },
+    {
+      "name": "AUCTION_SEED",
+      "type": "bytes",
+      "value": "[97, 117, 99, 116, 105, 111, 110]"
+    },
+    {
+      "name": "BIDDER_SEED",
+      "type": "bytes",
+      "value": "[98, 105, 100, 100, 101, 114]"
+    }
+  ],
+  "instructions": [
+    {
+      "name": "initialize",
+      "accounts": [
+        {
+          "name": "master",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "createAuction",
+      "accounts": [
+        {
+          "name": "auction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "master",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "startingPrice",
+          "type": "u64"
+        },
+        {
+          "name": "endDate",
+          "type": "u128"
+        },
+        {
+          "name": "data",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "bidding",
+      "accounts": [
+        {
+          "name": "auction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "prevBidder",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "bidder",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "auctionId",
+          "type": "u32"
+        },
+        {
+          "name": "price",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "pickWinner",
+      "accounts": [
+        {
+          "name": "auction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "auctionId",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "claimReward",
+      "accounts": [
+        {
+          "name": "auction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "bidder",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "auctionId",
+          "type": "u32"
+        },
+        {
+          "name": "bidderId",
+          "type": "u32"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Master",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lastId",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Auction",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u32"
+          },
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "startingPrice",
+            "type": "u64"
+          },
+          {
+            "name": "currentPrice",
+            "type": "u64"
+          },
+          {
+            "name": "winnerId",
+            "type": {
+              "option": "u32"
+            }
+          },
+          {
+            "name": "endDate",
+            "type": "u128"
+          },
+          {
+            "name": "data",
+            "type": "string"
+          },
+          {
+            "name": "rewarded",
+            "type": "bool"
+          },
+          {
+            "name": "lastBidderId",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Bidder",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u32"
+          },
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "auctionId",
+            "type": "u32"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "rewardAmount",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidPrice",
+      "msg": "The price given is not valid."
+    },
+    {
+      "code": 6001,
+      "name": "LowerPrice",
+      "msg": "The offered price must be higher than the current price."
+    },
+    {
+      "code": 6002,
+      "name": "EndedAuction",
+      "msg": "This auction sesstion has ended."
+    },
+    {
+      "code": 6003,
+      "name": "WinnerAlreadyExists",
+      "msg": "Winner already exists."
+    },
+    {
+      "code": 6004,
+      "name": "NoBidder",
+      "msg": "Can't choose a winner when there is no bidder."
+    },
+    {
+      "code": 6005,
+      "name": "InvalidRewardBalance",
+      "msg": "Reward balance is zero."
+    }
+  ]
+}

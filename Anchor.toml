@@ -6,12 +6,12 @@ skip-lint = false
 auction = "7QWxoHUMnEJAWr2LxpBzSKSgD9us2thCMeMZuiPRA9Ns"
 
 [registry]
-url = "https://api.apr.dev"
+url = "https://api.devnet.solana.com"
 
 [provider]
 cluster = "Localnet"
-wallet = "~/.config/solana/id.json"
+wallet = "/home/tung/Downloads/wallet-keypair.json"
 
-[scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
-client = "yarn run ts-node client/*.ts"
+# [scripts]
+# test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+# client = "yarn run ts-node client/*.ts"
