@@ -2,7 +2,7 @@ import { createContext, useState, useEffect, useContext, useMemo, useCallback } 
 import { BN } from "@project-serum/anchor";
 import { SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
-import bs58 from "bs58";
+// import bs58 from "bs58";
 
 import {
   getAuctionAddress,
@@ -63,11 +63,6 @@ export const AppProvider = ({ children }) => {
     updateState();
   }, [updateState]);
 
-  const getPot = useCallback(async () => {
-    // const pot = getTotalPrize(lottery);
-    // setLotteryPot(pot);
-  }, []);
-
   const getPlayers = useCallback(async () => {
     const players = [auction?.last_bidder_id];
     setAuctionPlayers(players);
@@ -109,7 +104,7 @@ export const AppProvider = ({ children }) => {
         .initialize()
         .accounts({
           master: masterAddress,
-          payer: wallet.publicKey,
+          signer: wallet.publicKey,
           systemProgram: SystemProgram.programId,
         })
         .rpc();
@@ -123,7 +118,7 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  const createAuction = async (startingPrice, endDate, data) => {
+  const createAuction = async ({ startingPrice, endDate, data }) => {
     setError("");
     setSuccess("");
 
@@ -134,6 +129,7 @@ export const AppProvider = ({ children }) => {
         .accounts({
           auction: auctionAddress,
           master: masterAddress,
+          _dumpBidder: await getBidderAddress(auctionAddress, 0),
           authority: wallet.publicKey,
           systemProgram: SystemProgram.programId,
         })
@@ -148,7 +144,7 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  const bidding = async (price) => {
+  const bidding = async ({price}) => {
     if (isNaN(price)) {
       toast.error("Please enter the new price");
       return 
@@ -233,10 +229,9 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     if (!auction) return;
-    getPot();
     getPlayers();
     getHistory();
-  }, [getPot, getPlayers, getHistory, auction]);
+  }, [getPlayers, getHistory, auction]);
 
 
   return (
@@ -249,7 +244,7 @@ export const AppProvider = ({ children }) => {
         auctionId,
         auctionPlayers,
         biddingHistory,
-        isFinished: auction && auction.winnerId,
+        auction: auction,
         initMaster,
         createAuction,
         bidding,

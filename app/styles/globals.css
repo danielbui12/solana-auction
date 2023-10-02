@@ -19,3 +19,37 @@ a {
 * {
   box-sizing: border-box;
 }
+
+h1, h2,h3,h4,h5,h6 {
+  font-weight: bolder;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.react-responsive-modal-modal {
+  background-color: #1e2128 !important;
+  border-radius: 5px;
+  width: 500px;
+
+}
+
+.react-responsive-modal-modal .react-responsive-modal-closeButton svg {
+  fill: #fff;
+}
+
+p[role="alert"] {
+  color: #ff4d4f;
+}
+
+input:not([type='submit'], [type='button']), textarea {
+  border: none;
+  outline: none;
+  background-color: #353a46;
+  color: #fff;
+  height: 2.5rem;
+  width: 100%;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 2rem;
+}

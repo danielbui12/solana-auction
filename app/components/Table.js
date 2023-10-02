@@ -3,18 +3,18 @@ import style from "../styles/Table.module.css";
 import TableRow from "./TableRow";
 
 const Table = () => {
-  const { lotteryHistory } = useAppContext();
-
+  const { biddingHistory } = useAppContext();
+  console.log('biddingHistory', biddingHistory);
   return (
     <div className={style.wrapper}>
       <div className={style.tableHeader}>
-        <div className={style.addressTitle}>💳 Lottery</div>
-        <div className={style.addressTitle}>💳 Address</div>
-        <div className={style.addressTitle}>💳 Ticket</div>
-        <div className={style.amountTitle}>💲 Amount</div>
+        <div className={style.addressTitle}>🏦 Auction</div>
+        <div className={style.addressTitle}>#️⃣ Address</div>
+        <div className={style.addressTitle}>💳 Bidding</div>
+        <div className={style.amountTitle}>💲 Price</div>
       </div>
       <div className={style.rows}>
-        {lotteryHistory?.map((h, i) => (
+        {biddingHistory?.map((h, i) => (
           <TableRow key={i} {...h} />
         ))}
       </div>

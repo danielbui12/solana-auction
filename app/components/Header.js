@@ -5,7 +5,7 @@ import style from "../styles/Header.module.css";
 const Header = () => {
   return (
     <div className={style.wrapper}>
-      <div className={style.title}>Auction DAPP 💰</div>
+      <div className={style.title}>Auction dApp 💰</div>
       <WalletMultiButton />
     </div>
   );

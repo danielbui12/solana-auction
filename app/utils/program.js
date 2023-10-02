@@ -33,12 +33,12 @@ export const getAuctionAddress = async (id) => {
   )[0];
 };
 
-export const getBidderAddress = async (bidderPk, id) => {
+export const getBidderAddress = async (auctionAddress, id) => {
   return (
     await PublicKey.findProgramAddress(
       [
         Buffer.from(BIDDER_SEED),
-        bidderPk.toBuffer(),
+        auctionAddress.toBuffer(),
         new BN(id).toArrayLike(Buffer, "le", 4),
       ],
       PROGRAM_ID

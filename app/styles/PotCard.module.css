@@ -21,6 +21,14 @@
   margin-bottom: 20px;
 }
 
+.timer {
+  color: #fff;
+  font-size: 1.2rem;
+  text-align: center; 
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
 .pot {
   font-size: 1.5rem;
   font-weight: bolder;
@@ -28,30 +36,56 @@
   text-align: center;
   flex: 1;
 }
+.potData {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  margin-top: 16px;
+}
 
-.potAmount {
+.potData img {
+  border-radius: 5px;
+}
+
+.potName {
   font-size: 1.5rem;
   font-weight: bolder;
   color: #fff;
   text-align: center;
+  margin-bottom: 20px;
+}
+
+.potDesc {
+  text-align: left;
+  font-size: .8rem;
+  color: #fff;
+  margin-bottom: 20px;
 }
 
 .btn {
-  background-color: #1e2128;
+  place-self: center;
+  margin-top: 20px;
   width: 50%;
   display: flex;
   justify-content: center;
-  place-self: center;
-  color: #f45358;
+}
+
+.btn button, .btn input[type='button'], .btn input[type='submit'] {
   padding: 15px 32px;
+  background-color: #1e2128;
+  color: #f45358;
   text-align: center;
   text-decoration: none;
-  margin-top: 20px;
   cursor: pointer;
   border-radius: 1.5rem;
   font-weight: bolder;
   font-size: 1.5rem;
   border: 1px solid #f45358;
+}
+
+.btn input[type='submit'] {
+  padding: 12px 28px;
+  font-size: 1.2rem;
 }
 
 .recentWinnerTitle {

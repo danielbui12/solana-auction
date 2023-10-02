@@ -1,15 +1,17 @@
 use anchor_lang::{
     prelude::*,
-    solana_program::{program::invoke, system_instruction::transfer},
+    solana_program::{
+        clock::Clock, program::invoke, system_instruction::transfer,
+    },
 };
-use std::time::{SystemTime, UNIX_EPOCH};
 
 mod constants;
 mod errors;
 mod states;
 use crate::{constants::*, errors::*, states::*};
 
-declare_id!("7QWxoHUMnEJAWr2LxpBzSKSgD9us2thCMeMZuiPRA9Ns");
+// declare_id!("7QWxoHUMnEJAWr2LxpBzSKSgD9us2thCMeMZuiPRA9Ns");
+declare_id!("Em2iU1X286qZ6Mii2B6Bh8EK863nTKhSep8cJdH7PeXE");
 
 #[program]
 mod auction {
@@ -22,7 +24,7 @@ mod auction {
     pub fn create_auction(
         ctx: Context<CreateAuction>,
         starting_price: u64,
-        end_date: u128,
+        end_date: u64,
         data: String,
     ) -> Result<()> {
         let auction: &mut Account<Auction> = &mut ctx.accounts.auction;
@@ -41,18 +43,15 @@ mod auction {
         Ok(())
     }
 
-    pub fn bidding(ctx: Context<Bidding>, _auction_id: u32, _price: u64) -> Result<()> {
+    pub fn bidding(ctx: Context<Bidding>, auction_id: u32, _price: u64) -> Result<()> {
         let auction: &mut Account<Auction> = &mut ctx.accounts.auction;
         let bidder: &mut Account<Bidder> = &mut ctx.accounts.bidder;
         let prev_bidder: &mut Account<Bidder> = &mut ctx.accounts.prev_bidder;
         let authority: &mut Signer = &mut ctx.accounts.authority;
 
-        let current_timestamp: u128 = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("Time went backwards")
-            .as_millis();
+        let current_timestamp = Clock::get()?.unix_timestamp as u64;
 
-        if auction.winner_id.is_some() || auction.end_date > current_timestamp {
+        if auction.winner_id.is_some() || auction.end_date < current_timestamp {
             return err!(AuctionError::EndedAuction);
         }
 
@@ -83,6 +82,7 @@ mod auction {
         auction.current_price = _price;
         bidder.id = auction.last_bidder_id;
         bidder.authority = authority.key();
+        bidder.auction_id = auction_id;
 
         Ok(())
     }
@@ -101,7 +101,7 @@ mod auction {
         let winner_id: u32 = auction.last_bidder_id;
         auction.winner_id = Some(winner_id);
         // // leave this for now
-        // auciton.rewarded = true;
+        // auction.rewarded = true;
 
         Ok(())
     }
@@ -152,6 +152,19 @@ pub struct CreateAuction<'info> {
     )]
     pub auction: Account<'info, Auction>,
 
+    #[account(
+        init,
+        payer = authority,
+        space = 8 + 4 + 32 + 4 + 8 + 8,
+        seeds = [
+            BIDDER_SEED,
+            auction.key().as_ref(),
+            &(auction.last_bidder_id).to_le_bytes()
+        ],
+        bump,
+    )]
+    pub _dump_bidder: Account<'info, Bidder>,
+
     #[account(mut, seeds = [MASTER_SEED], bump)]
     pub master: Account<'info, Master>,
 
@@ -162,18 +175,22 @@ pub struct CreateAuction<'info> {
 }
 
 #[derive(Accounts)]
-#[instruction(_auction_id: u32)]
+#[instruction(auction_id: u32)]
 pub struct Bidding<'info> {
     #[account(
         mut,
-        seeds = [AUCTION_SEED, &_auction_id.to_le_bytes()],
+        seeds = [AUCTION_SEED, &auction_id.to_le_bytes()],
         bump
     )]
     pub auction: Account<'info, Auction>,
 
     #[account(
         mut,
-        seeds = [BIDDER_SEED, auction.key().as_ref(), &(auction.last_bidder_id).to_le_bytes()],
+        seeds = [
+            BIDDER_SEED,
+            auction.key().as_ref(),
+            &(auction.last_bidder_id).to_le_bytes()
+        ],
         bump,
     )]
     pub prev_bidder: Account<'info, Bidder>,
