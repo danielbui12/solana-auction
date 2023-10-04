@@ -3,7 +3,7 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-auction = "Em2iU1X286qZ6Mii2B6Bh8EK863nTKhSep8cJdH7PeXE"
+auction = "5qCJsXGjyDwk9zn4TnarTbq6A3TBvDbzbEf4drQkY87E"
 
 # [programs.devnet]
 # auction = "7QWxoHUMnEJAWr2LxpBzSKSgD9us2thCMeMZuiPRA9Ns"

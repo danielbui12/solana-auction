@@ -10,8 +10,9 @@ mod errors;
 mod states;
 use crate::{constants::*, errors::*, states::*};
 
+// replace this to match with address on Anchor.toml
 // declare_id!("7QWxoHUMnEJAWr2LxpBzSKSgD9us2thCMeMZuiPRA9Ns");
-declare_id!("Em2iU1X286qZ6Mii2B6Bh8EK863nTKhSep8cJdH7PeXE");
+declare_id!("5qCJsXGjyDwk9zn4TnarTbq6A3TBvDbzbEf4drQkY87E");
 
 #[program]
 mod auction {
@@ -115,7 +116,7 @@ mod auction {
         let bidder: &mut Account<Bidder> = &mut ctx.accounts.bidder;
         let authority: &mut Signer = &mut ctx.accounts.authority;
 
-        if bidder.reward_amount > 0 {
+        if bidder.reward_amount == 0 {
             return err!(AuctionError::InvalidRewardBalance);
         }
 
@@ -125,6 +126,24 @@ mod auction {
         // reward to account
         **auction.to_account_info().try_borrow_mut_lamports()? -= amount;
         **authority.to_account_info().try_borrow_mut_lamports()? += amount;
+
+        Ok(())
+    }
+
+    pub fn claim_bidding(
+        ctx: Context<ClaimBidding>,
+        _auction_id: u32,
+    ) -> Result<()> {
+        let auction: &mut Account<Auction> = &mut ctx.accounts.auction;
+        let authority: &mut Signer = &mut ctx.accounts.authority;
+        
+        if auction.last_bidder_id == 0 {
+            return err!(AuctionError::NoBidder);
+        }
+
+        // reward to owner
+        **auction.to_account_info().try_borrow_mut_lamports()? -= auction.current_price;
+        **authority.to_account_info().try_borrow_mut_lamports()? += auction.current_price;
 
         Ok(())
     }
@@ -251,6 +270,22 @@ pub struct ClaimReward<'info> {
         has_one = authority,
     )]
     pub bidder: Account<'info, Bidder>,
+
+    pub authority: Signer<'info>,
+
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+#[instruction(_auction_id: u32)]
+pub struct ClaimBidding<'info> {
+    #[account(
+        mut,
+        seeds = [AUCTION_SEED, &_auction_id.to_le_bytes()],
+        bump,
+        has_one = authority
+    )]
+    pub auction: Account<'info, Auction>,
 
     pub authority: Signer<'info>,
 
