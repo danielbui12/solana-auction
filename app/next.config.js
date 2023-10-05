@@ -5,6 +5,6 @@ const nextConfig = {
   images: {
     domains: ["dummyimage.com"],
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

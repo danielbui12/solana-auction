@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Modal } from 'react-responsive-modal';
+import React, { useState } from "react";
+import { Modal } from "react-responsive-modal";
 
 const CustomModal = ({ children, modalTitle, text, className }) => {
   const [open, setOpen] = useState(false);
@@ -18,4 +18,4 @@ const CustomModal = ({ children, modalTitle, text, className }) => {
   );
 };
 
-export default CustomModal
+export default CustomModal;

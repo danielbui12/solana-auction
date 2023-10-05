@@ -1,4 +1,11 @@
-import { createContext, useState, useEffect, useContext, useMemo, useCallback } from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  useMemo,
+  useCallback,
+} from "react";
 import { BN } from "@project-serum/anchor";
 import { SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
@@ -12,7 +19,7 @@ import {
   // getTotalPrize,
 } from "../utils/program";
 import { confirmTx, mockWallet } from "../utils/helper";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 
 export const AppContext = createContext();
 
@@ -25,7 +32,7 @@ export const AppProvider = ({ children }) => {
   const [biddingHistory, setBiddingHistory] = useState([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [initialized, setInitialized] = useState(false)
+  const [initialized, setInitialized] = useState(false);
 
   // Get provider
   const { connection } = useConnection();
@@ -36,7 +43,6 @@ export const AppProvider = ({ children }) => {
     }
   }, [connection, wallet]);
 
-
   const updateState = useCallback(async () => {
     if (!program) return;
 
@@ -46,9 +52,9 @@ export const AppProvider = ({ children }) => {
         setMasterAddress(masterAddress);
       }
       const master = await program.account.master.fetch(
-        masterAddress ?? (await getMasterAddress())
+        masterAddress ?? (await getMasterAddress()),
       );
-      setInitialized(true)
+      setInitialized(true);
       setAuctionId(master.lastId);
       const auctionAddress = await getAuctionAddress(master.lastId);
       setAuctionAddress(auctionAddress);
@@ -89,7 +95,7 @@ export const AppProvider = ({ children }) => {
         auctionId: id,
         winnerId,
         winnerAddress: bidder.authority,
-        prize: 0 //getTotalPrize(lottery),
+        prize: 0, //getTotalPrize(lottery),
       });
     }
 
@@ -111,10 +117,10 @@ export const AppProvider = ({ children }) => {
       await confirmTx(txHash, connection);
 
       updateState();
-      toast.success("Initialized Master")
+      toast.success("Initialized Master");
     } catch (err) {
       setError(err.message);
-      toast.error("Initializing FAILED!")
+      toast.error("Initializing FAILED!");
     }
   };
 
@@ -123,7 +129,7 @@ export const AppProvider = ({ children }) => {
     setSuccess("");
 
     try {
-      const auctionAddress = await getAuctionAddress(auctionId+ 1);
+      const auctionAddress = await getAuctionAddress(auctionId + 1);
       const txHash = await program.methods
         .createAuction(new BN(startingPrice), endDate, data)
         .accounts({
@@ -137,17 +143,17 @@ export const AppProvider = ({ children }) => {
       await confirmTx(txHash, connection);
 
       updateState();
-      toast.success("Lottery Created!")
+      toast.success("Lottery Created!");
     } catch (err) {
       setError(err.message);
-      toast.error(err.message)
+      toast.error(err.message);
     }
   };
 
-  const bidding = async ({price}) => {
+  const bidding = async ({ price }) => {
     if (isNaN(price)) {
       toast.error("Please enter the new price");
-      return 
+      return;
     }
 
     setError("");
@@ -160,22 +166,22 @@ export const AppProvider = ({ children }) => {
           auction: auctionAddress,
           prevBidder: await getBidderAddress(
             auctionAddress,
-            auction.lastBidderId
+            auction.lastBidderId,
           ),
           bidder: await getBidderAddress(
             auctionAddress,
-            auction.lastBidderId + 1
+            auction.lastBidderId + 1,
           ),
           authority: wallet.publicKey,
           systemProgram: SystemProgram.programId,
         })
         .rpc();
       await confirmTx(txHash, connection);
-      toast.success("Bought a Ticket!")
+      toast.success("Bought a Ticket!");
       updateState();
     } catch (err) {
       setError(err.message);
-      toast.error(err.message)
+      toast.error(err.message);
     }
   };
 
@@ -195,10 +201,10 @@ export const AppProvider = ({ children }) => {
       await confirmTx(txHash, connection);
 
       updateState();
-      toast.success("Picked winner!")
+      toast.success("Picked winner!");
     } catch (err) {
       setError(err.message);
-      toast.error(err.message)
+      toast.error(err.message);
     }
   };
 
@@ -219,20 +225,18 @@ export const AppProvider = ({ children }) => {
       await confirmTx(txHash, connection);
 
       updateState();
-      toast.success("The Winner has claimed the prize!!")
+      toast.success("The Winner has claimed the prize!!");
     } catch (err) {
       setError(err.message);
-      toast.error(err.message)
+      toast.error(err.message);
     }
   };
-
 
   useEffect(() => {
     if (!auction) return;
     getPlayers();
     getHistory();
   }, [getPlayers, getHistory, auction]);
-
 
   return (
     <AppContext.Provider
@@ -252,7 +256,7 @@ export const AppProvider = ({ children }) => {
         claimReward,
         error,
         success,
-        initialized
+        initialized,
       }}
     >
       {children}

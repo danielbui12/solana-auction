@@ -4,7 +4,7 @@ import TableRow from "./TableRow";
 
 const Table = () => {
   const { biddingHistory } = useAppContext();
-  console.log('biddingHistory', biddingHistory);
+  console.log("biddingHistory", biddingHistory);
   return (
     <div className={style.wrapper}>
       <div className={style.tableHeader}>
