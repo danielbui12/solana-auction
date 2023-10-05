@@ -49,6 +49,11 @@
           "isSigner": false
         },
         {
+          "name": "dumpBidder",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "master",
           "isMut": true,
           "isSigner": false
@@ -71,7 +76,7 @@
         },
         {
           "name": "endDate",
-          "type": "u128"
+          "type": "u64"
         },
         {
           "name": "data",
@@ -179,6 +184,32 @@
           "type": "u32"
         }
       ]
+    },
+    {
+      "name": "claimBidding",
+      "accounts": [
+        {
+          "name": "auction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "auctionId",
+          "type": "u32"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -223,7 +254,7 @@
           },
           {
             "name": "endDate",
-            "type": "u128"
+            "type": "u64"
           },
           {
             "name": "data",
@@ -256,10 +287,6 @@
           {
             "name": "auctionId",
             "type": "u32"
-          },
-          {
-            "name": "price",
-            "type": "u64"
           },
           {
             "name": "rewardAmount",
@@ -300,5 +327,8 @@
       "name": "InvalidRewardBalance",
       "msg": "Reward balance is zero."
     }
-  ]
+  ],
+  "metadata": {
+    "address": "5qCJsXGjyDwk9zn4TnarTbq6A3TBvDbzbEf4drQkY87E"
+  }
 }
